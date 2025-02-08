@@ -4,8 +4,8 @@ This repository is a WIP on open sourcing a dataset gathered from cognitive scie
 
 <img src="./figs/experiment_timeline.jpg" alt="Visual projection experiment timeline" height="500">
 
-> [!NOTE]
-> **Figure 1** Trial timeline illustrating the sequence of visual stimuli and masking conditions. Participants first view the initial Board State for 1000 ms, followed by the Stimulus for 2000 ms. Subsequently, either no mask is presented (as shown on the left side of the figure), allowing immediate Recall, or one of three distractor masking conditions (Flash, Invisible, or New Board) is presented for 2000 ms (as shown in the right figure). Finally, in the Recall stage subjects are asked to replicate the pattern shown during the Stimulus stage without making any mistakes.
+> **Figure 1**
+> Trial timeline illustrating the sequence of visual stimuli and masking conditions. Participants first view the initial Board State for 1000 ms, followed by the Stimulus for 2000 ms. Subsequently, either no mask is presented (as shown on the left side of the figure), allowing immediate Recall, or one of three distractor masking conditions (Flash, Invisible, or New Board) is presented for 2000 ms (as shown in the right figure). Finally, in the Recall stage subjects are asked to replicate the pattern shown during the Stimulus stage without making any mistakes.
 
 ## Table of Contents
 
@@ -21,8 +21,8 @@ This repository is a WIP on open sourcing a dataset gathered from cognitive scie
   <img src="./figs/board.png" width="48%" alt="Task board">
 </p>
 
-> [!NOTE]
-> **Figure 2.** Task instructions and board state.
+> **Figure 2.**
+> Task instructions and board state.
 
 Subjects were presented with brief instructions on the task before starting, as shown in the left figure above. On the right, a single random board layout of the task is shown. These board layouts randomly change between each trial of the task. Subjects solve 30 trials of each masking condition (Flash, Invisible, New Board) and 30 trials of a no masking condition for a total of 120 trials. Each masking condition is visually depicted in Figure 1.
 
