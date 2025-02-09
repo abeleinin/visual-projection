@@ -11,7 +11,7 @@ This repository is a WIP on open sourcing a dataset gathered from cognitive scie
 
 ### **Figure 1.** Modified visual patterns test timeline
 
-<img src="./figs/experiment_timeline.jpg" alt="Visual projection experiment timeline" height="500">
+<img src="./figs/experiment_timeline.png" alt="Visual projection experiment timeline" height="500">
 
 > **Note:** Trial timeline illustrating the sequence of visual stimuli and masking conditions. Participants first view the initial Board State for 1000 ms, followed by the Stimulus for 2000 ms. Subsequently, either no mask is presented (as shown on the left side of the figure), allowing immediate Recall, or one of three distractor masking conditions (Flash, Invisible, or New Board) is presented for 2000 ms (as shown in the right figure). Finally, in the Recall stage subjects are asked to replicate the pattern shown during the Stimulus stage without making any mistakes.
 
