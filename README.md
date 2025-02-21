@@ -56,6 +56,33 @@ Subjects were presented with brief instructions on the task before starting, as 
 
 Data coming soon
 
+### Data Format
+
+```json
+{
+    "subjectId": "12345",                                    // Subject Id
+    "trials": [                                              // List of 120 trials
+        {
+            "trial": 1,                                      // Trial index
+            "maskType": "Flash",                             // Trial Mask either "None", "Flash", "Invisible", or "NewBoard"
+            "maskMetaData": {},                              // Contains "NewBoardPositions" during "NewBoard" mask trials
+            "response": ["23", "31", "22", "12", "3"],       // Tile keys the user clicked
+            "reactionTime": [203],                           // Subject reaction time in milliseconds
+            "stimulus": ["17", "23", "31", "22", "12", "2"], // Stimulus tile key values
+            "boardPositions": [                              // Contains a list of all the board tile positions where each x/y value is the top-left corner
+                {
+                    "x": 28,
+                    "y": 24,
+                    "key": "0"
+                },
+                // Other {x, y, key} tile positions follow below...
+            ]
+        },
+        // Other trials follow below...
+    ]
+}
+```
+
 ## Citation
 
 Publication in-review.
