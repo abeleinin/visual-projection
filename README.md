@@ -56,30 +56,108 @@ Subjects were presented with brief instructions on the task before starting, as 
 
 Data coming soon
 
-### Data Format
+### JSON Schema
+
+The JSON schema below is stored in [data/experiment_schema.json](./data/experiment_schema.json).
 
 ```json
 {
-    "subjectId": "12345",                                    // Subject Id
-    "trials": [                                              // List of 120 trials
-        {
-            "trial": 1,                                      // Trial index
-            "maskType": "Flash",                             // Trial Mask either "None", "Flash", "Invisible", or "NewBoard"
-            "maskMetaData": {},                              // Contains "NewBoardPositions" during "NewBoard" mask trials
-            "response": ["23", "31", "22", "12", "3"],       // Tile keys the user clicked
-            "reactionTime": [203],                           // Subject reaction time in milliseconds
-            "stimulus": ["17", "23", "31", "22", "12", "2"], // Stimulus tile key values
-            "boardPositions": [                              // Contains a list of all the board tile positions where each x/y value is the top-left corner
-                {
-                    "x": 28,
-                    "y": 24,
-                    "key": "0"
-                },
-                // Other {x, y, key} tile positions follow below...
-            ]
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "Experiment Data",
+    "description": "Contains subject information and their trials.",
+    "properties": {
+        "subjectId": {
+            "type": "string",
+            "description": "Unique identifier for the subject."
         },
-        // Other trials follow below...
-    ]
+        "trials": {
+            "type": "array",
+            "description": "List of trials conducted by the subject (typically 120).",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "trial": {
+                        "type": "integer",
+                        "description": "Trial index (1-based)."
+                    },
+                    "maskType": {
+                        "type": "string",
+                        "enum": ["None", "Flash", "Invisible", "NewBoard"],
+                        "description": "Type of visual mask applied in the trial."
+                    },
+                    "maskMetaData": {
+                        "type": "object",
+                        "description": "Contains additional metadata for the mask type. When `maskType` is 'NewBoard', it includes 'NewBoardPositions'.",
+                        "properties": {
+                            "NewBoardPositions": {
+                                "type": "array",
+                                "description": "Positions of the new board tiles when maskType is 'NewBoard'.",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "x": {
+                                            "type": "integer",
+                                            "description": "X coordinate of the new tile."
+                                        },
+                                        "y": {
+                                            "type": "integer",
+                                            "description": "Y coordinate of the new tile."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "response": {
+                        "type": "array",
+                        "description": "List of tile keys the subject clicked.",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "reactionTime": {
+                        "type": "array",
+                        "description": "Reaction times recorded in milliseconds.",
+                        "items": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    "stimulus": {
+                        "type": "array",
+                        "description": "List of tile keys presented as stimuli.",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "boardPositions": {
+                        "type": "array",
+                        "description": "All board tile positions, where each tile is defined by its top-left corner coordinates.",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "x": {
+                                    "type": "integer",
+                                    "description": "X coordinate of the tile."
+                                },
+                                "y": {
+                                    "type": "integer",
+                                    "description": "Y coordinate of the tile."
+                                },
+                                "key": {
+                                    "type": "string",
+                                    "description": "Tile key identifier."
+                                }
+                            }
+                        }
+                    }
+                },
+                "required": ["trial", "maskType", "response", "reactionTime", "stimulus", "boardPositions"]
+            }
+        }
+    },
+    "required": ["subjectId", "trials"]
 }
 ```
 

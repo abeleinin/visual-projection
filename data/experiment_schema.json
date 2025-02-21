@@ -1,0 +1,98 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "Experiment Data",
+    "description": "Contains subject information and their trials.",
+    "properties": {
+        "subjectId": {
+            "type": "string",
+            "description": "Unique identifier for the subject."
+        },
+        "trials": {
+            "type": "array",
+            "description": "List of trials conducted by the subject (size 120).",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "trial": {
+                        "type": "integer",
+                        "description": "Trial index (1-based)."
+                    },
+                    "maskType": {
+                        "type": "string",
+                        "enum": ["None", "Flash", "Invisible", "NewBoard"],
+                        "description": "Type of visual mask applied in the trial."
+                    },
+                    "maskMetaData": {
+                        "type": "object",
+                        "description": "Contains additional metadata for the mask type. When `maskType` is 'NewBoard', it includes 'NewBoardPositions'.",
+                        "properties": {
+                            "NewBoardPositions": {
+                                "type": "array",
+                                "description": "Positions of the new board tiles when maskType is 'NewBoard'.",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "x": {
+                                            "type": "integer",
+                                            "description": "X coordinate of the new tile."
+                                        },
+                                        "y": {
+                                            "type": "integer",
+                                            "description": "Y coordinate of the new tile."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "response": {
+                        "type": "array",
+                        "description": "List of tile keys the subject clicked.",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "reactionTime": {
+                        "type": "array",
+                        "description": "Reaction times recorded in milliseconds.",
+                        "items": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    "stimulus": {
+                        "type": "array",
+                        "description": "List of tile keys presented as stimuli.",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "boardPositions": {
+                        "type": "array",
+                        "description": "All board tile positions, where each tile is defined by its top-left corner coordinates.",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "x": {
+                                    "type": "integer",
+                                    "description": "X coordinate of the tile."
+                                },
+                                "y": {
+                                    "type": "integer",
+                                    "description": "Y coordinate of the tile."
+                                },
+                                "key": {
+                                    "type": "string",
+                                    "description": "Tile key identifier."
+                                }
+                            }
+                        }
+                    }
+                },
+                "required": ["trial", "maskType", "response", "reactionTime", "stimulus", "boardPositions"]
+            }
+        }
+    },
+    "required": ["subjectId", "trials"]
+}
