@@ -54,7 +54,7 @@ Subjects were presented with brief instructions on the task before starting, as 
 
 ## Data
 
-Data coming soon
+Data stored in the [data/](./data) directory.
 
 ### JSON Schema
 
