@@ -28,6 +28,8 @@ Subjects were presented with brief instructions on the task before starting, as 
 
 ## Results
 
+Our statistical analysis code is stored in [scripts/analysis.Rmd](./scripts/analysis.Rmd) as a R Markdown file. We've knitted a html webpage of the analysis code, which can be rendered in the browser here: [analysis html page](https://html-preview.github.io/?url=https://github.com/abeleinin/visual-projection/blob/main/scripts/analysis.html).
+
 ### **Figure 3.** Three performance statistic bar charts showing mean pattern size across the four conditions 
 
 <img src="./figs/results_histogram_3_by_1.jpg" alt="Three results histograms" >

@@ -1,0 +1,251 @@
+---
+html_document: default
+date: "February 2025"
+title: "Projective Memory Analysis"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ez)
+library(jsonlite)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(emmeans)
+library(ggsignif)
+library(gridExtra)
+```
+
+# Load Data
+
+```{r}
+subject_data <- lapply(1:40, function(i) {
+  file_name <- sprintf("../data/subject%d.json", i)
+  fromJSON(file_name)
+})
+
+subject_df <- tibble(
+  subjectId = sapply(subject_data, function(x) x$subjectId),
+  trials = lapply(subject_data, function(x) x$trials)
+)
+
+trial_df <- subject_df %>%
+  unnest_longer(trials) %>%
+  unnest_wider(trials) %>%
+  mutate(
+    stimulus = lapply(stimulus, function(x) eval(parse(text = x))),
+    response = lapply(response, function(x) eval(parse(text = x))),
+    score = sapply(stimulus, length)
+  ) %>%
+  select(-reactionTime, -maskMetaData, -boardPositions)
+```
+
+```{r}
+trial_df_wide <- trial_df %>%
+  group_by(subjectId, maskType) %>%
+  mutate(maskTrial = row_number()) %>%
+  ungroup() %>%
+  select(subjectId, maskTrial, maskType, score) %>%
+  pivot_wider(names_from = maskType, values_from = score, values_fill = 0) %>%
+  rename(noneScore = None,
+         flashScore = Flash,
+         invisibleScore = Invisible,
+         newBoardScore = NewBoard)
+```
+
+# Performance Metrics
+
+```{r}
+# Final Trial Performance data frame
+FTP_df <- trial_df_wide %>%
+  filter(maskTrial == 30) %>%
+  select(
+    subjectId, 
+    noneScore, 
+    flashScore, 
+    invisibleScore, 
+    newBoardScore
+  ) %>%
+  pivot_longer(
+    cols = -subjectId,
+    names_to = "mask",
+    values_to = "score",
+    names_pattern = "(.*)Score"
+  ) %>%
+  mutate(across(c(mask, subjectId), as.factor))
+```
+
+
+```{r}
+# Average Trial Performance data frame
+ATP_df <- trial_df_wide %>%
+  group_by(subjectId) %>%
+  filter (maskTrial >= 20) %>%
+  summarise(
+    flashMean = mean(flashScore),
+    invisibleMean = mean(invisibleScore),
+    noneMean = mean(noneScore),
+    newBoardMean  = mean(newBoardScore),
+  ) %>% 
+  pivot_longer(
+    cols = c(noneMean, flashMean, invisibleMean, newBoardMean),
+    names_to = "mask",
+    values_to = "score",
+    names_pattern = "(.*)Mean"
+  ) %>% 
+  mutate(across(c(mask, subjectId), as.factor))
+```
+
+```{r}
+# Max Trial Performance data frame
+MTP_df <- trial_df_wide %>%
+  group_by(subjectId) %>%
+  filter (maskTrial >= 20) %>%
+  summarise(
+    flashMax = max(flashScore),
+    invisibleMax = max(invisibleScore),
+    noneMax = max(noneScore),
+    newBoardMax = max(newBoardScore),
+  ) %>% 
+  pivot_longer(
+    cols = c(noneMax, flashMax, invisibleMax, newBoardMax),
+    names_to = "mask",
+    values_to = "score",
+    names_pattern = "(.*)Max"
+  ) %>% 
+  mutate(across(c(mask, subjectId), as.factor))
+```
+
+## Contrast Analysis in ANOVA
+
+```{r}
+# Define proper contrast matrix based on the mask levels printed below:
+
+# levels(FTP_df$mask)
+# levels(ATP_df$mask)
+# levels(MTP_df$mask)
+# [1] "flash"     "invisible" "newBoard"  "none"  
+# [1] "flash"     "invisible" "newBoard"  "none"  
+# [1] "flash"     "invisible" "newBoard"  "none"  
+
+contrast_matrix <- list(
+  None_Flash_vs_Invis_NB = c(0.5, -0.5, -0.5, 0.5),
+  None_vs_Flash = c(1, 0, 0, -1),
+  Invisible_vs_New_Board = c(0, 1, -1, 0)
+)
+```
+
+```{r}
+# Final Trial Performance
+options(contrasts = c("contr.sum", "contr.poly"))
+FTP_df_anova <- ezANOVA(
+  data = FTP_df,
+  dv = score,
+  within = .(mask),
+  wid = .(subjectId),
+  return_aov = TRUE
+)
+FTP_df_emm <- emmeans(FTP_df_anova$aov, "mask")
+contrast_results_final <- contrast(FTP_df_emm, contrast_matrix)
+summary(contrast_results_final, adjust = "none")
+```
+
+```{r}
+# Average Trial Performance
+options(contrasts = c("contr.sum", "contr.poly"))
+ATP_df_anova <- ezANOVA(
+  data = ATP_df,
+  dv = score,
+  within = .(mask),
+  wid = .(subjectId),
+  return_aov = TRUE
+)
+ATP_df_emm <- emmeans(ATP_df_anova$aov, "mask")
+contrast_results_avg <- contrast(ATP_df_emm, contrast_matrix)
+summary(contrast_results_avg, adjust = "none")
+```
+
+```{r}
+# Max Trial Performance
+options(contrasts = c("contr.sum", "contr.poly"))
+MTP_df_anova <- ezANOVA(
+  data = MTP_df,
+  dv = score,
+  within = .(mask),
+  wid = .(subjectId),
+  return_aov = TRUE
+)
+MTP_df_emm <- emmeans(MTP_df_anova$aov, "mask")
+contrast_results_max <- contrast(MTP_df_emm, contrast_matrix)
+summary(contrast_results_max, adjust = "none")
+```
+
+# Figure 2 Generation Code
+
+```{r}
+# Calculate summary statistics across all subjects for each performance metric.
+ATP_df_mean_sd <- ATP_df %>%
+  group_by(mask) %>%
+  summarise(
+    mean = mean(score),
+    se = sd(score) / sqrt(n())
+  )
+
+MTP_df_mean_sd <- MTP_df %>%
+  group_by(mask) %>%
+  summarise(
+    mean = mean(score),
+    se = sd(score) / sqrt(n())
+  )
+
+FTP_df_mean_sd <- FTP_df %>%
+  group_by(mask) %>%
+  summarise(
+    mean = mean(score),
+    se = sd(score) / sqrt(n())
+  )
+```
+
+```{r, fig.width=12, fig.height=4}
+generate_bar_chart <- function(data, title, si_sig, b_sig) {
+  u <- max(data$mean) + max(data$se)
+  data$mask <- factor(data$mask, levels = c("none", "flash", "invisible", "newBoard"))
+  p <- ggplot(data, aes(x = mask, y = mean, fill = mask)) +
+    geom_bar(stat = "identity", width = 0.8, color = "black") +
+    geom_errorbar(aes(ymin = mean - se, ymax = mean + se), width = 0.1) +
+    ylim(0, 7.1) +
+    scale_x_discrete(
+      labels = c("flash" = "Flash", "none" = "None", "invisible" = "Invisible", "newBoard" = "New Board")
+    ) +
+    theme_classic() +
+    scale_fill_grey(start = 0.9, end = 0.2) +
+    labs(title = title, y = "Mean Pattern Size", x = "Mask", legend = "Mask") +
+    guides(fill = "none") +
+    geom_signif(comparisons = list(c("flash", "none"), c("invisible", "newBoard")),
+                family = "Times New Roman",
+                annotations = c("n.s.", si_sig),
+                y_position = c(u + 0.5, u + 0.5),
+                tip_length = 0.1,
+                textsize = 5) +
+    geom_signif(y_position = c(u + 1.5), xmin = c(1.5), xmax = c(3.5),
+                family = "Times New Roman",
+                annotations = c(b_sig),
+                tip_length = 0.1,
+                textsize = 5) +
+    theme(
+      text = element_text(family = "Times New Roman"),
+      plot.title = element_text(hjust = 0.5, size = 14),
+      axis.title.x = element_text(size = 14),
+      axis.title.y = element_text(size = 14),
+      axis.text.x = element_text(size = 12),
+      axis.text.y = element_text(size = 12)
+    )
+  return(p)
+}
+
+a <- generate_bar_chart(MTP_df_mean_sd, "Max Trial Performance", "*", "***")
+b <- generate_bar_chart(FTP_df_mean_sd, "Final Trial Performance", "n.s.", "**")
+c <- generate_bar_chart(ATP_df_mean_sd, "Average Trial Performance", "*", "***")
+
+grid.arrange(a, b, c, nrow = 1)
+```
