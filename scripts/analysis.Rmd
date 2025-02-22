@@ -80,7 +80,7 @@ FTP_df <- trial_df_wide %>%
 # Average Trial Performance data frame
 ATP_df <- trial_df_wide %>%
   group_by(subjectId) %>%
-  filter (maskTrial >= 20) %>%
+  filter (maskTrial > 10) %>%
   summarise(
     flashMean = mean(flashScore),
     invisibleMean = mean(invisibleScore),
@@ -100,7 +100,7 @@ ATP_df <- trial_df_wide %>%
 # Max Trial Performance data frame
 MTP_df <- trial_df_wide %>%
   group_by(subjectId) %>%
-  filter (maskTrial >= 20) %>%
+  filter (maskTrial > 10) %>%
   summarise(
     flashMax = max(flashScore),
     invisibleMax = max(invisibleScore),
@@ -213,7 +213,7 @@ generate_bar_chart <- function(data, title, si_sig, b_sig) {
   p <- ggplot(data, aes(x = mask, y = mean, fill = mask)) +
     geom_bar(stat = "identity", width = 0.8, color = "black") +
     geom_errorbar(aes(ymin = mean - se, ymax = mean + se), width = 0.1) +
-    ylim(0, 7.1) +
+    ylim(0, 7.4) +
     scale_x_discrete(
       labels = c("flash" = "Flash", "none" = "None", "invisible" = "Invisible", "newBoard" = "New Board")
     ) +
@@ -243,9 +243,9 @@ generate_bar_chart <- function(data, title, si_sig, b_sig) {
   return(p)
 }
 
-a <- generate_bar_chart(MTP_df_mean_sd, "Max Trial Performance", "*", "***")
-b <- generate_bar_chart(FTP_df_mean_sd, "Final Trial Performance", "n.s.", "**")
-c <- generate_bar_chart(ATP_df_mean_sd, "Average Trial Performance", "*", "***")
+a <- generate_bar_chart(MTP_df_mean_sd, "Max Trial Performance", "*", "**")
+b <- generate_bar_chart(FTP_df_mean_sd, "Final Trial Performance", "n.s.", "*")
+c <- generate_bar_chart(ATP_df_mean_sd, "Average Trial Performance", "*", "**")
 
 grid.arrange(a, b, c, nrow = 1)
 ```
