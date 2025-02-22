@@ -1,13 +1,12 @@
-# Visual Projection Experiment Data
+# Projection Experiment Data
 
-This repository is a WIP on open sourcing a dataset gathered from cognitive science research on visual projection. In the near future, this repository will include data from 40 participants solving this [modified visual paterns test](https://projection-experiment.vercel.app/).
+This repository is open sources a dataset gathered from cognitive science research on visual projection. We provide data from 40 participants solving this [modified visual paterns test](https://projection-experiment.vercel.app/).
 
 ## Table of Contents
 
 - [Method](#method)
 - [Results](#results)
 - [Data](#data)
-- [Citation](#citation)
 
 ### **Figure 1.** Modified visual patterns test timeline
 
@@ -28,7 +27,7 @@ Subjects were presented with brief instructions on the task before starting, as 
 
 ## Results
 
-Our statistical analysis code is stored in [scripts/analysis.Rmd](./scripts/analysis.Rmd) as a R Markdown file. We've knitted a html webpage of the analysis code, which can be rendered in the browser here: [analysis html page](https://html-preview.github.io/?url=https://github.com/abeleinin/visual-projection/blob/main/scripts/analysis.html).
+Our statistical analysis code is stored in [scripts/analysis.Rmd](./scripts/analysis.Rmd) as a R Markdown file. We've knitted an html webpage of the analysis code, which can be viewed in [scripts/analysis.html](./scripts/analysis.html).
 
 ### **Figure 3.** Three performance statistic bar charts showing mean pattern size across the four conditions 
 
@@ -105,7 +104,7 @@ Our statistical analysis code is stored in [scripts/analysis.Rmd](./scripts/anal
 
 ## Data
 
-Data stored in the [data/](./data) directory.
+Subject data is provided in JSON format in the [data/](./data) directory.
 
 ### JSON Schema
 
@@ -124,7 +123,7 @@ The JSON schema below is stored in [data/experiment_schema.json](./data/experime
         },
         "trials": {
             "type": "array",
-            "description": "List of trials conducted by the subject (typically 120).",
+            "description": "List of trials conducted by the subject (size 120).",
             "items": {
                 "type": "object",
                 "properties": {
@@ -212,6 +211,3 @@ The JSON schema below is stored in [data/experiment_schema.json](./data/experime
 }
 ```
 
-## Citation
-
-Publication in-review.
